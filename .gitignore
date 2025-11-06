@@ -26,6 +26,19 @@ parts/
 sdist/
 var/
 wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
+.env
+.env.local
+
+# IDEs
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
@@ -60,6 +73,11 @@ yarn-error.log
 *.swp
 *.swo
 *~
+.DS_Store
+
+# Logs
+*.log
+logs/
 
 # Environment variables
 .env
@@ -68,13 +86,14 @@ yarn-error.log
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Node (if used)
+node_modules/
+package-lock.json
 
 # Temporary files
 tmp/

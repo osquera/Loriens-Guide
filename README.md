@@ -114,6 +114,8 @@ python app.py
 
 The backend will start on `http://localhost:5000`
 
+**Note**: The server runs in debug mode for development/hackathon purposes. For production deployment, disable debug mode by setting `debug=False` in `app.py`.
+
 ### Frontend Setup
 
 1. Open `frontend/index.html` in a web browser, or

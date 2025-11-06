@@ -168,4 +168,5 @@ def request_assistance():
     return jsonify(response)
 
 if __name__ == '__main__':
+    # Debug mode enabled for hackathon/development - disable in production
     app.run(debug=True, host='0.0.0.0', port=5000)

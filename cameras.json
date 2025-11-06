@@ -1,0 +1,37 @@
+{
+  "cameras": [
+    {
+      "camera_id": "lib_lobby_01",
+      "name": "Library Lobby - Main Entrance",
+      "location": {
+        "lat": 55.6761,
+        "long": 12.5683
+      },
+      "orientation": "facing east",
+      "video_clip_url": "videos/library_lobby.mp4",
+      "context_description": "Library Lobby - Main Entrance, facing east"
+    },
+    {
+      "camera_id": "lib_floor2_01",
+      "name": "Library Second Floor - Study Area",
+      "location": {
+        "lat": 55.6763,
+        "long": 12.5685
+      },
+      "orientation": "facing south",
+      "video_clip_url": "videos/library_floor2.mp4",
+      "context_description": "Library Second Floor - Study Area, facing south"
+    },
+    {
+      "camera_id": "lib_exit_01",
+      "name": "Library Exit - West Door",
+      "location": {
+        "lat": 55.6759,
+        "long": 12.5681
+      },
+      "orientation": "facing west",
+      "video_clip_url": "videos/library_exit.mp4",
+      "context_description": "Library Exit - West Door, facing west"
+    }
+  ]
+}

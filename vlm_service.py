@@ -172,11 +172,12 @@ class VLMService:
                     "message": f"VLM API returned status code {response.status_code}",
                     "text": "I'm sorry, I couldn't analyze the video at this time. Please try again."
                 }
-        except requests.exceptions.RequestException as e:
-            # Handle network errors
+        except requests.exceptions.RequestException:
+            # Handle network errors - don't expose details
+            logger.error("Failed to connect to VLM API")
             return {
                 "error": True,
-                "message": f"Failed to connect to VLM API: {str(e)}",
+                "message": "Failed to connect to VLM API",
                 "text": "I'm sorry, I'm having trouble connecting to the vision service. Please try again."
             }
     

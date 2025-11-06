@@ -77,10 +77,10 @@ def process_query():
         lat = float(data['lat'])
         long = float(data['long'])
         question_text = str(data['question_text'])
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         return jsonify({
             "error": True,
-            "message": f"Invalid parameter types: {str(e)}"
+            "message": "Invalid parameter types"
         }), 400
     
     # Process the request
@@ -134,10 +134,10 @@ def find_nearest_camera():
     try:
         lat = float(data['lat'])
         long = float(data['long'])
-    except (ValueError, TypeError) as e:
+    except (ValueError, TypeError):
         return jsonify({
             "error": True,
-            "message": f"Invalid parameter types: {str(e)}"
+            "message": "Invalid parameter types"
         }), 400
     
     # Find nearest camera
@@ -156,4 +156,5 @@ def find_nearest_camera():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    debug_mode = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

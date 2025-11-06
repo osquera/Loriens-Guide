@@ -31,7 +31,7 @@ def save_camera_registry(registry):
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint."""
-    return jsonify({"status": "healthy", "service": "Loriens-Guide Backend"})
+    return jsonify({"status": "healthy", "service": "Lórien's Guide Backend"})
 
 @app.route('/api/cameras', methods=['GET'])
 def get_cameras():

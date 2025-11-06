@@ -185,7 +185,7 @@ async function processUserQuery(query) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                location: state.currentLocation || { latitude: 55.6761, longitude: 12.5683 },
+                location: state.currentLocation || CONFIG.defaultLocation,
                 query: query
             })
         });
@@ -276,7 +276,7 @@ function requestLocation() {
             },
             (error) => {
                 console.warn('Location error:', error);
-                // Use default location (Copenhagen Central Station)
+                // Use default location from config
                 state.currentLocation = CONFIG.defaultLocation;
                 loadNearbyCameras();
             }

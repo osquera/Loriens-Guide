@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 import uvicorn
 
@@ -8,9 +8,9 @@ app = FastAPI(title="Lórien's Guide API")
 
 class GuidanceRequest(BaseModel):
     """Request model for guidance endpoint."""
-    latitude: float
-    longitude: float
-    question_text: str
+    latitude: float = Field(..., ge=-90, le=90, description="Latitude coordinate (-90 to 90)")
+    longitude: float = Field(..., ge=-180, le=180, description="Longitude coordinate (-180 to 180)")
+    question_text: str = Field(..., min_length=1, description="User's question about navigation")
 
 
 class GuidanceResponse(BaseModel):
@@ -29,7 +29,12 @@ async def get_guidance(request: GuidanceRequest):
     Returns:
         GuidanceResponse with answer_text
     """
-    # TODO: Implement actual logic to call Hafnia API and process guidance
+    # TODO: Integrate with Hafnia API for actual guidance
+    # Expected integration steps:
+    # 1. Send location (latitude, longitude) and question to Hafnia API
+    # 2. Receive spatial/navigation data and context from Hafnia
+    # 3. Process the response to generate human-friendly directions
+    # 4. Handle API errors and edge cases (out of bounds, unknown location, etc.)
     # For now, return a placeholder response
     answer = f"You are at coordinates ({request.latitude}, {request.longitude}). " \
              f"Regarding your question: '{request.question_text}' - " \

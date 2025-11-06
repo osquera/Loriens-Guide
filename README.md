@@ -1,269 +1,68 @@
 # Lórien's Guide
 
-Project Hafnia Hackathon: Lórien's Guide - A tool to help the vision impaired in public spaces.
+Project Hafnia Hackathon: A voice-enabled mobile web application to help the vision impaired navigate public spaces.
 
-## Overview
+## Features
 
-Lórien's Guide is an accessibility assistant that uses Vision Language Models (VLM) to help visually impaired users navigate public spaces. The system analyzes video feeds from strategically placed cameras and provides clear, spoken directions based on the user's location and questions.
+- 🌍 **GPS Location Tracking**: Real-time location access using `navigator.geolocation` API
+- 🎤 **Speech-to-Text**: Voice input using Web Speech API (`SpeechRecognition`)
+- 🔊 **Text-to-Speech**: Audio responses using Web Speech API (`speechSynthesis`)
+- 📱 **Mobile-First Design**: Responsive web interface optimized for mobile devices
+- ♿ **Accessibility**: Large, easy-to-use "Tap to Talk" button interface
 
-## How It Works
+## Live Demo Access
 
-### Core Logic Flow
+Simply open `index.html` in a modern web browser (Chrome, Edge, or Safari recommended) to try the application.
 
-1. **Get User Request**: Receives the user's location (`lat`, `long`) and their question (`question_text`) from the mobile app
-2. **Find Nearest Camera**: Queries `cameras.json` to find the camera closest to the user's location
-3. **Get Video & Context**: Retrieves the video clip URL and context description for the nearest camera
-4. **Call Hafnia VLM**: Sends the video clip and a carefully crafted prompt to the VLM API
-5. **Get VLM Response**: Receives a JSON object with the text description from the VLM
-6. **Relay to User**: Sends the response back to the mobile app, which reads it aloud
+### Requirements
 
-### VLM API Prompt
+- Modern web browser with Web Speech API support (Chrome 33+, Edge 79+, Safari 14.1+)
+- HTTPS or localhost (required for microphone and location access)
+- Microphone access permission
+- Location services enabled (optional but recommended)
 
-The prompt sent to the VLM is critical to the system's effectiveness:
+## How to Use
 
-```
-You are an accessibility assistant for a user with vision impairment. 
-The user is at the '{location_context}'.
+1. **Grant Permissions**: Allow microphone and location access when prompted
+2. **Tap the Button**: Press the large "Tap to Talk" button
+3. **Ask Your Question**: Speak naturally - ask about your location, directions, or surroundings
+4. **Listen to Response**: The app will read the answer aloud using text-to-speech
 
-They have asked: '{user_question}'
+## Technology Stack
 
-Analyze the attached video clip of this location. Provide a safe, clear, 
-and direct answer. Use landmarks and steps (e.g., 'on your left,' 
-'walk 10 steps'), not colors.
-```
-
-## Installation
-
-### Prerequisites
-
-- Python 3.8 or higher
-- pip package manager
-
-### Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/osquera/Loriens-Guide.git
-cd Loriens-Guide
-```
-
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Configure environment variables:
-```bash
-cp .env.example .env
-# Edit .env and add your VLM API key
-```
-
-4. Run the server:
-```bash
-python app.py
-```
-
-The server will start on `http://localhost:5000`
-
-## API Endpoints
-
-### POST `/api/v1/query`
-
-Process a user query and get directions.
-
-**Request Body:**
-```json
-{
-  "lat": 55.6761,
-  "long": 12.5683,
-  "question_text": "I'm looking for the exit, where is it?"
-}
-```
-
-**Response:**
-```json
-{
-  "camera_id": "lib_lobby_01",
-  "camera_name": "Library Lobby - Main Entrance",
-  "question": "I'm looking for the exit, where is it?",
-  "answer": "The exit is 20 steps forward. Walk straight ahead, keeping the information desk on your right. You will reach the main doors in approximately 20 steps.",
-  "error": false
-}
-```
-
-### GET `/api/v1/cameras`
-
-List all available cameras.
-
-**Response:**
-```json
-{
-  "cameras": [
-    {
-      "camera_id": "lib_lobby_01",
-      "name": "Library Lobby - Main Entrance",
-      "location": {
-        "lat": 55.6761,
-        "long": 12.5683
-      },
-      "orientation": "facing east",
-      "video_clip_url": "videos/library_lobby.mp4",
-      "context_description": "Library Lobby - Main Entrance, facing east"
-    }
-  ]
-}
-```
-
-### POST `/api/v1/cameras/nearest`
-
-Find the nearest camera to given coordinates.
-
-**Request Body:**
-```json
-{
-  "lat": 55.6761,
-  "long": 12.5683
-}
-```
-
-**Response:**
-```json
-{
-  "camera": {
-    "camera_id": "lib_lobby_01",
-    "name": "Library Lobby - Main Entrance",
-    "location": {
-      "lat": 55.6761,
-      "long": 12.5683
-    },
-    "orientation": "facing east",
-    "video_clip_url": "videos/library_lobby.mp4",
-    "context_description": "Library Lobby - Main Entrance, facing east"
-  }
-}
-```
-
-### GET `/health`
-
-Health check endpoint.
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "service": "Hafnia VLM API"
-}
-```
-
-## Camera Configuration
-
-Cameras are configured in `cameras.json`. Each camera entry includes:
-
-- `camera_id`: Unique identifier
-- `name`: Human-readable name
-- `location`: GPS coordinates (lat, long)
-- `orientation`: Direction the camera is facing
-- `video_clip_url`: Path to video clip
-- `context_description`: Detailed description used in VLM prompts
-
-Example:
-```json
-{
-  "camera_id": "lib_lobby_01",
-  "name": "Library Lobby - Main Entrance",
-  "location": {
-    "lat": 55.6761,
-    "long": 12.5683
-  },
-  "orientation": "facing east",
-  "video_clip_url": "videos/library_lobby.mp4",
-  "context_description": "Library Lobby - Main Entrance, facing east"
-}
-```
-
-## Architecture
-
-### Components
-
-1. **app.py**: Flask backend server that handles HTTP requests
-2. **vlm_service.py**: Core VLM service logic
-   - Camera distance calculation
-   - Nearest camera finding
-   - VLM prompt construction
-   - VLM API integration
-3. **cameras.json**: Camera configuration database
-
-### Key Features
-
-- **Haversine Distance Calculation**: Accurately finds the nearest camera using GPS coordinates
-- **Accessibility-Focused Prompts**: Crafted specifically for vision-impaired users
-- **Error Handling**: Graceful degradation when VLM API is unavailable
-- **RESTful API**: Clean, documented endpoints for mobile app integration
-
-## Example Usage
-
-### Using curl
-
-```bash
-# Find nearest camera
-curl -X POST http://localhost:5000/api/v1/cameras/nearest \
-  -H "Content-Type: application/json" \
-  -d '{"lat": 55.6761, "long": 12.5683}'
-
-# Ask a question
-curl -X POST http://localhost:5000/api/v1/query \
-  -H "Content-Type: application/json" \
-  -d '{
-    "lat": 55.6761,
-    "long": 12.5683,
-    "question_text": "Where is the bathroom?"
-  }'
-```
-
-### Using Python
-
-```python
-import requests
-
-url = "http://localhost:5000/api/v1/query"
-data = {
-    "lat": 55.6761,
-    "long": 12.5683,
-    "question_text": "I'm looking for the exit, where is it?"
-}
-
-response = requests.post(url, json=data)
-result = response.json()
-
-print(f"Answer: {result['answer']}")
-```
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **APIs**: 
+  - Geolocation API for GPS tracking
+  - Web Speech API for speech recognition and synthesis
+- **No Backend Required**: Fully client-side demo application
 
 ## Development
 
-### Running Tests
+This is a single-page application with no build process required. Simply edit the files and refresh your browser:
 
-```bash
-python -m unittest test_vlm_service.py test_app.py -v
-```
+- `index.html` - Main HTML structure
+- `styles.css` - Styling and responsive design
+- `app.js` - JavaScript application logic
 
-### Code Style
+## Future Enhancements
 
-The project follows PEP 8 Python style guidelines.
+In a production version, this app would integrate with:
+- Vision-Language Models (VLM) for scene understanding
+- Computer vision for object detection and scene analysis
+- Backend API for processing complex queries
+- Offline support with service workers
+- Multi-language support
 
-## Environment Variables
+## Browser Compatibility
 
-- `VLM_API_URL`: URL for the Hafnia VLM API (default: https://api.hafnia.ai/v1/vlm)
-- `VLM_API_KEY`: API key for VLM service authentication
-- `PORT`: Server port (default: 5000)
+| Feature | Chrome | Edge | Safari | Firefox |
+|---------|--------|------|--------|---------|
+| Geolocation | ✅ | ✅ | ✅ | ✅ |
+| Speech Recognition | ✅ | ✅ | ✅ | ❌ |
+| Speech Synthesis | ✅ | ✅ | ✅ | ✅ |
+
+**Note**: Firefox doesn't support the Web Speech API's SpeechRecognition feature. Use Chrome, Edge, or Safari for the full experience.
 
 ## License
 
-MIT License
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Acknowledgments
-
-Created for the Project Hafnia Hackathon to improve accessibility in public spaces.
+This project was created for the Hafnia Hackathon.

@@ -1,3 +1,13 @@
+# Video files (too large for git)
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# Keep README files
+!README.md
+
 # Python
 __pycache__/
 *.py[cod]
@@ -31,6 +41,20 @@ env.bak/
 venv.bak/
 
 # IDEs
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.venv
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# IDE
 .vscode/
 .idea/
 *.swp
@@ -53,5 +77,6 @@ Thumbs.db
 htmlcov/
 
 # Temporary files
-/tmp/
+tmp/
+temp/
 *.tmp

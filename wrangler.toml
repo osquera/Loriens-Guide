@@ -1,0 +1,15 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "loriens-guide"
+compatibility_date = "2025-11-06"
+
+# Cloudflare Pages configuration for static frontend
+pages_build_output_dir = "frontend"
+
+# Environment variables for production
+[env.production]
+# Add your backend API URL here
+# vars = { API_BASE_URL = "https://your-backend-api.example.com" }
+
+# Environment variables for preview/staging
+[env.preview]
+# vars = { API_BASE_URL = "https://staging-backend-api.example.com" }

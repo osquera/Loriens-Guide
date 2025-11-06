@@ -96,7 +96,7 @@ Lórien's Guide is a voice-first accessibility tool that leverages Vision Langua
 ## Getting Started
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.12+
 - Modern web browser with Web Speech API support (Chrome, Edge, Safari)
 
 ### Backend Setup

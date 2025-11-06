@@ -4,7 +4,7 @@ This guide explains how to deploy the Lórien's Guide Hafnia VLM API backend ser
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 3.12 or higher
 - pip package manager
 - Access to a Hafnia VLM API endpoint and API key
 - Video clips for each camera location
@@ -75,7 +75,7 @@ gunicorn -w 4 -b 0.0.0.0:5000 app:app
 
 1. Create a `Dockerfile`:
 ```dockerfile
-FROM python:3.9-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -114,7 +114,7 @@ pip install awsebcli
 
 2. Initialize:
 ```bash
-eb init -p python-3.9 loriens-guide
+eb init -p python-3.12 loriens-guide
 ```
 
 3. Create environment:
@@ -216,7 +216,7 @@ For high traffic:
 ## Troubleshooting
 
 ### Server won't start
-- Check Python version (3.8+)
+- Check Python version (3.12+)
 - Verify all dependencies installed: `pip install -r requirements.txt`
 - Check port is not already in use
 

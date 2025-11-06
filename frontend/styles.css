@@ -1,0 +1,356 @@
+/* Lórien's Guide - High Contrast, Accessible Styles */
+
+/* CSS Variables for easy theming */
+:root {
+    --bg-primary: #000000;
+    --bg-secondary: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --accent-color: #00ff00;
+    --accent-hover: #00cc00;
+    --border-color: #333333;
+    --warning-color: #ffcc00;
+    --error-color: #ff3333;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 18px;
+    min-height: 100vh;
+}
+
+/* Accessibility - Screen reader only text */
+.visually-accessible {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+/* Container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    padding: 30px 0;
+    border-bottom: 3px solid var(--accent-color);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+/* Voice Interface */
+.voice-interface {
+    margin: 40px 0;
+    text-align: center;
+}
+
+.status-indicator {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.status-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.status-text {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Voice Button */
+.voice-button {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, var(--accent-color), #00aa00);
+    border: 5px solid var(--accent-hover);
+    color: var(--bg-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 255, 0, 0.3);
+}
+
+.voice-button:hover,
+.voice-button:focus {
+    transform: scale(1.05);
+    box-shadow: 0 6px 30px rgba(0, 255, 0, 0.5);
+    outline: 3px solid var(--accent-color);
+    outline-offset: 5px;
+}
+
+.voice-button:active,
+.voice-button[aria-pressed="true"] {
+    transform: scale(0.95);
+    background: linear-gradient(145deg, #ff3333, #cc0000);
+    border-color: #ff0000;
+    box-shadow: 0 6px 30px rgba(255, 51, 51, 0.5);
+}
+
+.button-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.button-text {
+    font-size: 1.2rem;
+}
+
+/* Text Input */
+.text-input-container {
+    display: flex;
+    gap: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.text-input {
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.text-input:focus {
+    outline: 3px solid var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.send-button {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background-color: var(--accent-color);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.send-button:hover,
+.send-button:focus {
+    background-color: var(--accent-hover);
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Response Area */
+.response-area {
+    margin: 40px 0;
+    padding: 30px;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    min-height: 150px;
+}
+
+.response-content {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+}
+
+.response-content.empty::before {
+    content: 'Your response will appear here';
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin: 40px 0;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.action-button {
+    padding: 25px 15px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.action-button:hover,
+.action-button:focus {
+    background-color: var(--accent-color);
+    color: var(--bg-primary);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.action-icon {
+    font-size: 2rem;
+}
+
+.action-text {
+    font-weight: 600;
+}
+
+/* Camera Info */
+.camera-info {
+    margin: 40px 0;
+    padding: 20px;
+    background-color: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.camera-list {
+    margin-top: 15px;
+}
+
+.camera-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.camera-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.camera-details {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.loading-text {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Status Classes */
+.status-active {
+    color: var(--accent-color);
+}
+
+.status-inactive {
+    color: var(--error-color);
+}
+
+.status-processing {
+    color: var(--warning-color);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .voice-button {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .button-icon {
+        font-size: 2.5rem;
+    }
+    
+    .button-text {
+        font-size: 1rem;
+    }
+    
+    .text-input-container {
+        flex-direction: column;
+    }
+    
+    .action-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 3px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --bg-primary: #000000;
+        --text-primary: #ffffff;
+        --accent-color: #ffff00;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

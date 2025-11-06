@@ -243,7 +243,7 @@ print(f"Answer: {result['answer']}")
 ### Running Tests
 
 ```bash
-python -m pytest tests/
+python -m unittest test_vlm_service.py test_app.py -v
 ```
 
 ### Code Style

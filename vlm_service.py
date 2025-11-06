@@ -8,10 +8,15 @@ Handles the core logic for:
 """
 
 import json
+import logging
 import math
 import os
 from typing import Dict, Optional, Tuple
 import requests
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class VLMService:
@@ -39,10 +44,10 @@ class VLMService:
                 data = json.load(f)
                 return data.get('cameras', [])
         except FileNotFoundError:
-            print(f"Warning: {self.cameras_file} not found")
+            logger.warning(f"Warning: {self.cameras_file} not found")
             return []
         except json.JSONDecodeError as e:
-            print(f"Error parsing {self.cameras_file}: {e}")
+            logger.error(f"Error parsing {self.cameras_file}: {e}")
             return []
     
     def _calculate_distance(self, lat1: float, long1: float, 

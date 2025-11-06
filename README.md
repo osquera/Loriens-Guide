@@ -1,78 +1,68 @@
 # Lórien's Guide
-Project Hafnia Hackathon: Lórien's Guide: A tool to help the vision impaired in public spaces.
 
-## Overview
+Project Hafnia Hackathon: A voice-enabled mobile web application to help the vision impaired navigate public spaces.
 
-Lórien's Guide is an assistive technology solution designed to help vision-impaired individuals navigate public spaces using location-based video context and AI assistance.
+## Features
 
-## Project Structure
+- 🌍 **GPS Location Tracking**: Real-time location access using `navigator.geolocation` API
+- 🎤 **Speech-to-Text**: Voice input using Web Speech API (`SpeechRecognition`)
+- 🔊 **Text-to-Speech**: Audio responses using Web Speech API (`speechSynthesis`)
+- 📱 **Mobile-First Design**: Responsive web interface optimized for mobile devices
+- ♿ **Accessibility**: Large, easy-to-use "Tap to Talk" button interface
 
-```
-Loriens-Guide/
-├── database/           # Camera registry database
-│   ├── cameras.json   # Maps video clips to GPS coordinates
-│   └── README.md      # Database documentation
-├── videos/            # Pre-recorded video clips
-│   └── README.md      # Video requirements and guidelines
-└── README.md          # This file
-```
+## Live Demo Access
 
-## Camera Registry Database
+Simply open `index.html` in a modern web browser (Chrome, Edge, or Safari recommended) to try the application.
 
-The camera registry is the core component of this PoC. It maps pre-recorded video clips to specific GPS coordinates, allowing the system to provide location-based visual context without requiring access to real camera feeds.
+### Requirements
 
-### Key Features
+- Modern web browser with Web Speech API support (Chrome 33+, Edge 79+, Safari 14.1+)
+- HTTPS or localhost (required for microphone and location access)
+- Microphone access permission
+- Location services enabled (optional but recommended)
 
-- **JSON-based database** (`database/cameras.json`)
-- **4 demo locations** including library, park, train station, and coffee shop
-- **GPS coordinate mapping** for location-based queries
-- **Contextual descriptions** for each location
+## How to Use
 
-### Sample Camera Entry
+1. **Grant Permissions**: Allow microphone and location access when prompted
+2. **Tap the Button**: Press the large "Tap to Talk" button
+3. **Ask Your Question**: Speak naturally - ask about your location, directions, or surroundings
+4. **Listen to Response**: The app will read the answer aloud using text-to-speech
 
-```json
-{
-  "camera_id": "lib_lobby_01",
-  "name": "Library Lobby - Main Entrance",
-  "location": {
-    "lat": 40.7128,
-    "long": -74.0060
-  },
-  "video_clip_url": "videos/library_lobby.mp4",
-  "context_description": "User is at the library main entrance, facing east."
-}
-```
+## Technology Stack
 
-## Getting Started
+- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **APIs**: 
+  - Geolocation API for GPS tracking
+  - Web Speech API for speech recognition and synthesis
+- **No Backend Required**: Fully client-side demo application
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/osquera/Loriens-Guide.git
-   cd Loriens-Guide
-   ```
+## Development
 
-2. **Add video clips**
-   - Place your pre-recorded video clips in the `videos/` directory
-   - See `videos/README.md` for video requirements
+This is a single-page application with no build process required. Simply edit the files and refresh your browser:
 
-3. **Explore the camera registry**
-   - Check `database/cameras.json` for available locations
-   - See `database/README.md` for detailed documentation
+- `index.html` - Main HTML structure
+- `styles.css` - Styling and responsive design
+- `app.js` - JavaScript application logic
 
-## Future Development
+## Future Enhancements
 
-This PoC demonstrates the core concept. Future enhancements could include:
+In a production version, this app would integrate with:
+- Vision-Language Models (VLM) for scene understanding
+- Computer vision for object detection and scene analysis
+- Backend API for processing complex queries
+- Offline support with service workers
+- Multi-language support
 
-- Migration to MongoDB Atlas (free tier) for scalable database
-- Integration with real camera feeds (with proper permissions)
-- Mobile application for vision-impaired users
-- AI-powered scene description and navigation assistance
-- Real-time location tracking and guidance
+## Browser Compatibility
 
-## Contributing
+| Feature | Chrome | Edge | Safari | Firefox |
+|---------|--------|------|--------|---------|
+| Geolocation | ✅ | ✅ | ✅ | ✅ |
+| Speech Recognition | ✅ | ✅ | ✅ | ❌ |
+| Speech Synthesis | ✅ | ✅ | ✅ | ✅ |
 
-This is a hackathon project. Contributions and improvements are welcome!
+**Note**: Firefox doesn't support the Web Speech API's SpeechRecognition feature. Use Chrome, Edge, or Safari for the full experience.
 
 ## License
 
-TBD
+This project was created for the Hafnia Hackathon.

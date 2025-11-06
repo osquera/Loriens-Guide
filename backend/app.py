@@ -5,6 +5,7 @@ A lightweight server to handle logic for vision-impaired assistance in public sp
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from datetime import datetime
 import json
 import os
 
@@ -87,7 +88,7 @@ def analyze_with_vlm():
         "query": query,
         "analysis": "VLM integration placeholder - describe the scene from camera feed",
         "confidence": 0.85,
-        "timestamp": "2025-11-06T21:04:29.521Z"
+        "timestamp": datetime.now().isoformat()
     }
     
     return jsonify(response)
@@ -156,7 +157,7 @@ def request_assistance():
             "camera": camera,
             "analysis": f"Analysis from camera {camera['id']}: {camera.get('description', 'Scene description')}",
             "voice_response": f"I can see {camera.get('description', 'the area around you')}",
-            "timestamp": "2025-11-06T21:04:29.521Z"
+            "timestamp": datetime.now().isoformat()
         }
     else:
         response = {

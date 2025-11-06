@@ -7,7 +7,11 @@
 const CONFIG = {
     backendUrl: 'http://localhost:5000',
     speechRecognitionLanguage: 'en-US',
-    autoRefreshInterval: 30000 // 30 seconds
+    autoRefreshInterval: 30000, // 30 seconds
+    defaultLocation: { // Copenhagen Central Station
+        latitude: 55.6761,
+        longitude: 12.5683
+    }
 };
 
 // State management
@@ -273,20 +277,14 @@ function requestLocation() {
             (error) => {
                 console.warn('Location error:', error);
                 // Use default location (Copenhagen Central Station)
-                state.currentLocation = {
-                    latitude: 55.6761,
-                    longitude: 12.5683
-                };
+                state.currentLocation = CONFIG.defaultLocation;
                 loadNearbyCameras();
             }
         );
     } else {
         console.warn('Geolocation not supported');
         // Use default location
-        state.currentLocation = {
-            latitude: 55.6761,
-            longitude: 12.5683
-        };
+        state.currentLocation = CONFIG.defaultLocation;
         loadNearbyCameras();
     }
 }

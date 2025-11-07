@@ -126,31 +126,6 @@ git push
 
 Railway will automatically rebuild and deploy.
 
-## Cost
-
-- **Free tier**: $5 credit/month (~550 hours)
-- **Hobby plan**: $5/month for more resources
-- Your app should easily fit in free tier for hackathon
-
-## Alternative: Render.com
-
-If you prefer Render over Railway:
-
-1. Go to [render.com](https://render.com)
-2. Create **New Web Service**
-3. Connect GitHub repo
-4. Settings:
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `gunicorn backend.app:app`
-5. Add environment variables
-6. Deploy
-
----
-
-**Need help?** Check Railway docs: https://docs.railway.app
-
-The server will start on `http://localhost:5000`
-
 ### 5. Test the API
 
 ```bash

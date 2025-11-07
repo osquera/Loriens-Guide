@@ -10,7 +10,7 @@ import requests
 
 def test_get_guidance_endpoint() -> None:
     """Test the POST /api/get-guidance endpoint."""
-    url = "http://localhost:8000/api/get-guidance"
+    url = "https://loriens-guide-production.up.railway.app"
     timeout = 5.0
 
     # Test data matching the problem statement
@@ -37,7 +37,7 @@ def test_get_guidance_endpoint() -> None:
 
 def test_health_check() -> None:
     """Test the root health check endpoint."""
-    url = "http://localhost:8000/"
+    url = "https://loriens-guide-production.up.railway.app"
     timeout = 5.0
 
     try:

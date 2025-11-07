@@ -1,69 +1,24 @@
 {
   "cameras": [
     {
-      "id": "cam001",
-      "name": "Central Station - Main Hall",
+      "id": "laptop_camera",
+      "name": "Laptop Camera - Live Feed",
       "location": {
         "latitude": 55.6761,
         "longitude": 12.5683,
-        "address": "Copenhagen Central Station, Main Hall"
+        "address": "Your Current Location (Laptop Camera)"
       },
-      "description": "Main entrance hall with ticket counters and information desk",
+      "description": "Live camera feed from laptop webcam",
+      "video_clip_url": "/videos/laptop_camera_latest.mp4",
       "status": "active",
-      "coverage_area": "Indoor public space",
-      "capabilities": ["object_detection", "text_recognition", "person_detection"]
-    },
-    {
-      "id": "cam002",
-      "name": "Central Station - Platform 1",
-      "location": {
-        "latitude": 55.6765,
-        "longitude": 12.5690,
-        "address": "Copenhagen Central Station, Platform 1"
-      },
-      "description": "Platform area with train arrival displays",
-      "status": "active",
-      "coverage_area": "Platform and tracks",
-      "capabilities": ["object_detection", "text_recognition", "person_detection"]
-    },
-    {
-      "id": "cam003",
-      "name": "City Hall Square",
-      "location": {
-        "latitude": 55.6759,
-        "longitude": 12.5697,
-        "address": "Copenhagen City Hall Square"
-      },
-      "description": "Open public square with pedestrian crossings",
-      "status": "active",
-      "coverage_area": "Outdoor public square",
-      "capabilities": ["object_detection", "person_detection", "traffic_monitoring"]
-    },
-    {
-      "id": "cam004",
-      "name": "Metro Station - Kongens Nytorv",
-      "location": {
-        "latitude": 55.6800,
-        "longitude": 12.5850,
-        "address": "Kongens Nytorv Metro Station"
-      },
-      "description": "Underground metro station entrance and platform",
-      "status": "active",
-      "coverage_area": "Metro station entrance",
-      "capabilities": ["object_detection", "text_recognition", "person_detection"]
-    },
-    {
-      "id": "cam005",
-      "name": "Airport Terminal 3",
-      "location": {
-        "latitude": 55.6181,
-        "longitude": 12.6508,
-        "address": "Copenhagen Airport, Terminal 3 Departures"
-      },
-      "description": "Airport departure hall with check-in counters",
-      "status": "active",
-      "coverage_area": "Airport terminal",
-      "capabilities": ["object_detection", "text_recognition", "person_detection", "baggage_detection"]
+      "coverage_area": "Real-time view from laptop",
+      "capabilities": [
+        "object_detection",
+        "text_recognition",
+        "person_detection"
+      ]
+
     }
   ]
 }
+    

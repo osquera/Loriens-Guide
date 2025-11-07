@@ -21,6 +21,7 @@ from loriens_guide.vlm_service import VLMService
 
 load_dotenv()
 
+
 def test_asset_upload(service: VLMService, video_path: str) -> str | None:
     """Test uploading a video asset."""
     print(f"\n1. Uploading video asset: {video_path}")

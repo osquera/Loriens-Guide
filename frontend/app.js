@@ -3,8 +3,8 @@
 
 // API Configuration - Update this with your backend URL
 const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:8000'  // Local development
-    : 'https://your-backend-api.railway.app';  // Production - CHANGE THIS!
+    ? 'http://localhost:5000'  // Local development
+    : 'https://loriens-guide-production.up.railway.app';  // Production backend
 
 class LoriensGuide {
     constructor() {

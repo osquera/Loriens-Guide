@@ -107,19 +107,32 @@ class LoriensGuide {
         this.recognition.interimResults = true;
         this.recognition.lang = 'en-US';
         this.recognition.maxAlternatives = 1;
+        
+        // Add debugging
+        console.log('Speech recognition initialized:', {
+            continuous: this.recognition.continuous,
+            interimResults: this.recognition.interimResults,
+            lang: this.recognition.lang
+        });
 
         this.recognition.onstart = () => {
             this.isListening = true;
             this.tapButton.classList.add('listening');
             this.updateStatus('🎤 Listening... Speak now!', 'success');
+            console.log('Speech recognition started - microphone is active');
         };
 
         this.recognition.onresult = (event) => {
+            console.log('Speech recognition result received:', event.results.length, 'results');
+            
             let interimTranscript = '';
             let finalTranscript = '';
 
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 const transcript = event.results[i][0].transcript;
+                const confidence = event.results[i][0].confidence;
+                console.log(`Result ${i}: "${transcript}" (confidence: ${confidence}, final: ${event.results[i].isFinal})`);
+                
                 if (event.results[i].isFinal) {
                     finalTranscript += transcript + ' ';
                 } else {
@@ -131,37 +144,83 @@ class LoriensGuide {
             if (displayText) {
                 this.transcriptText.textContent = displayText;
                 this.transcriptText.classList.add('active');
+                console.log('Displaying transcript:', displayText);
             }
 
             if (finalTranscript) {
+                console.log('Final transcript received, processing question');
                 this.handleUserQuestion(finalTranscript.trim());
             }
         };
+        
+        this.recognition.onspeechstart = () => {
+            console.log('Speech detected - user is speaking');
+            this.updateStatus('🎤 Detected speech, listening...', 'success');
+        };
+        
+        this.recognition.onspeechend = () => {
+            console.log('Speech ended - processing...');
+        };
+        
+        this.recognition.onaudiostart = () => {
+            console.log('Audio capture started');
+        };
+        
+        this.recognition.onaudioend = () => {
+            console.log('Audio capture ended');
+        };
+        
+        this.recognition.onsoundstart = () => {
+            console.log('Sound detected');
+        };
+        
+        this.recognition.onsoundend = () => {
+            console.log('Sound ended');
+        };
 
         this.recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error, event);
             this.isListening = false;
             this.tapButton.classList.remove('listening');
             
             let errorMessage = 'Speech recognition error';
+            let shouldSpeak = true;
+            
             switch(event.error) {
                 case 'no-speech':
-                    errorMessage = 'No speech detected. Please try again.';
+                    errorMessage = 'No speech detected. Please speak louder and try again.';
+                    console.log('No speech detected - user may not have spoken or volume too low');
                     break;
                 case 'audio-capture':
-                    errorMessage = 'Microphone not found or not working';
+                    errorMessage = 'Microphone not found or not working. Check your microphone settings.';
+                    console.error('Audio capture failed - microphone issue');
                     break;
                 case 'not-allowed':
-                    errorMessage = 'Microphone permission denied';
+                    errorMessage = 'Microphone permission denied. Please allow microphone access in your browser settings.';
+                    console.error('Microphone permission denied by user or browser');
                     break;
                 case 'network':
-                    errorMessage = 'Network error occurred';
+                    errorMessage = 'Network error - speech recognition requires internet. Check your connection.';
+                    console.error('Network error - speech recognition service unavailable');
+                    break;
+                case 'aborted':
+                    errorMessage = 'Speech recognition aborted.';
+                    shouldSpeak = false;
+                    console.log('Speech recognition was aborted');
+                    break;
+                case 'service-not-allowed':
+                    errorMessage = 'Speech service not allowed. Check browser permissions.';
+                    console.error('Speech service blocked');
                     break;
                 default:
-                    errorMessage = `Error: ${event.error}`;
+                    errorMessage = `Speech error: ${event.error}. Please try again.`;
+                    console.error('Unknown speech recognition error:', event.error);
             }
             
             this.updateStatus(errorMessage, 'error');
-            this.speak(errorMessage);
+            if (shouldSpeak) {
+                this.speak(errorMessage);
+            }
         };
 
         this.recognition.onend = () => {

@@ -12,7 +12,23 @@ from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend access
+
+# Configure CORS to allow requests from frontend
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": [
+                "https://loriensguide.osquera.com",
+                "http://localhost:5000",
+                "http://localhost:8000",
+                "http://127.0.0.1:5000",
+            ],
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type"],
+        }
+    },
+)
 
 # Load camera registry
 CAMERA_REGISTRY_PATH = Path(__file__).parent / "camera_registry.json"

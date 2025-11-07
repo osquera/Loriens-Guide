@@ -214,12 +214,76 @@ class LoriensGuide {
         this.tapButton.classList.add('processing');
         this.updateStatus('🤔 Processing your question...', 'success');
 
-        // Simulate VLM response (in a real app, this would call a backend API)
-        setTimeout(() => {
-            const response = this.generateResponse(question);
-            this.displayResponse(response);
-            this.speak(response);
-        }, 1000);
+        // Call the backend API
+        this.callBackendAPI(question)
+            .then(response => {
+                this.displayResponse(response);
+                this.speak(response);
+            })
+            .catch(error => {
+                console.error('API Error:', error);
+                const fallbackResponse = this.generateResponse(question);
+                this.displayResponse(fallbackResponse);
+                this.speak(fallbackResponse);
+            });
+    }
+
+    async callBackendAPI(question) {
+        // First, find the nearest camera
+        if (!this.currentLocation) {
+            throw new Error('Location not available');
+        }
+
+        try {
+            // Find nearby cameras
+            const camerasResponse = await fetch(`${this.apiBaseUrl}/api/cameras/nearby`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    latitude: this.currentLocation.lat,
+                    longitude: this.currentLocation.lng,
+                    radius: 1000 // 1km radius
+                })
+            });
+
+            if (!camerasResponse.ok) {
+                throw new Error(`Camera lookup failed: ${camerasResponse.status}`);
+            }
+
+            const camerasData = await camerasResponse.json();
+            
+            if (!camerasData.cameras || camerasData.cameras.length === 0) {
+                return 'I\'m sorry, there are no cameras available in your current area. Please try moving to a different location.';
+            }
+
+            const nearestCamera = camerasData.cameras[0];
+
+            // Now analyze with VLM
+            const vlmResponse = await fetch(`${this.apiBaseUrl}/api/vlm/analyze`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    camera_id: nearestCamera.id,
+                    query: question
+                })
+            });
+
+            if (!vlmResponse.ok) {
+                throw new Error(`VLM analysis failed: ${vlmResponse.status}`);
+            }
+
+            const vlmData = await vlmResponse.json();
+            
+            return vlmData.analysis || vlmData.voice_response || 'I received a response but couldn\'t interpret it.';
+
+        } catch (error) {
+            console.error('Backend API error:', error);
+            throw error;
+        }
     }
 
     generateResponse(question) {

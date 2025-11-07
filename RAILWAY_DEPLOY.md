@@ -61,7 +61,3 @@ Railway Dashboard → Deployments → View Logs
 
 ### Redeploy:
 Just push to GitHub - Railway auto-deploys
-
-## Cost
-- Free tier: $5 credit/month (~550 hours)
-- Perfect for hackathon projects!

@@ -33,6 +33,26 @@ def save_camera_registry(registry: dict) -> None:
         json.dump(registry, f, indent=2)
 
 
+@app.route("/", methods=["GET"])
+def root() -> Response:
+    """Root endpoint - API information."""
+    return jsonify(
+        {
+            "service": "Lórien's Guide API",
+            "version": "1.0.0",
+            "status": "running",
+            "endpoints": {
+                "health": "/api/health",
+                "cameras": "/api/cameras",
+                "camera_by_id": "/api/cameras/<id>",
+                "nearby_cameras": "/api/cameras/nearby",
+                "vlm_analyze": "/api/vlm/analyze",
+            },
+            "docs": "https://github.com/osquera/Loriens-Guide",
+        }
+    )
+
+
 @app.route("/api/health", methods=["GET"])
 def health_check() -> Response:
     """Health check endpoint."""

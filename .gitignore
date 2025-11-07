@@ -99,3 +99,6 @@ package-lock.json
 tmp/
 temp/
 *.tmp
+
+# Personal files:
+plan.txt

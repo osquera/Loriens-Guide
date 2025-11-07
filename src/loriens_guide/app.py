@@ -11,7 +11,7 @@ from flask import Flask, jsonify, request
 from flask.wrappers import Response
 from flask_cors import CORS
 
-from vlm_service import VLMService
+from loriens_guide.vlm_service import VLMService
 
 # Load environment variables
 load_dotenv()
@@ -25,7 +25,7 @@ vlm_service = VLMService()
 
 
 @app.route("/health", methods=["GET"])
-def health_check()-> tuple[Response, int]:
+def health_check() -> tuple[Response, int]:
     """Health check endpoint."""
     return jsonify({"status": "healthy", "service": "Hafnia VLM API"}), 200
 

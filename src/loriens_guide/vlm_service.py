@@ -31,8 +31,12 @@ class VLMService:
         """
         self.cameras_file = Path(cameras_file)
         self.cameras = self._load_cameras()
-        self.vlm_api_url = os.getenv("VLM_API_URL", "https://api.hafnia.ai/v1/vlm")
-        self.vlm_api_key = os.getenv("VLM_API_KEY", "")
+        # Milestone Hackathon API Configuration
+        base_url = os.getenv("VLM_API_URL", "https://api.mdi.milestonesys.com")
+        # Normalize base URL by removing trailing /api/v1 or trailing slash
+        self.vlm_api_base = base_url.removesuffix("/api/v1").removesuffix("/")
+        self.api_key = os.getenv("HACKATHON_API_KEY", "")
+        self.api_secret = os.getenv("HACKATHON_API_SECRET", "")
 
     def _load_cameras(self) -> list:
         """Load camera data from JSON file.
@@ -131,42 +135,132 @@ class VLMService:
             f"Use landmarks and steps (e.g., 'on your left,' 'walk 10 steps'), not colors."
         )
 
-    def call_vlm_api(self, video_clip_url: str, prompt: str) -> dict:
-        """Call the Hafnia VLM API with video and prompt.
+    def upload_video_asset(self, video_path: str) -> dict:
+        """Upload a video asset to the Milestone Hackathon API.
 
         Args:
-            video_clip_url: URL or path to the video clip
-            prompt: The constructed prompt for the VLM
+            video_path: Path to the video file (.mp4 or .mkv, <100MB, <30s)
+
+        Returns:
+            Dictionary with asset_id or error information
+
+        """
+        upload_url = f"{self.vlm_api_base}/api/v1/assets"
+        auth_header = f"ApiKey {self.api_key}:{self.api_secret}"
+        headers = {"Authorization": auth_header}
+
+        try:
+            with open(video_path, "rb") as video_file:
+                files = {"file": video_file}
+                response = requests.post(upload_url, headers=headers, files=files, timeout=120)
+
+            # Accept both 200 OK and 201 Created as success
+            if response.status_code in (requests.codes.ok, requests.codes.created):
+                data = response.json()
+                # The API returns "id" field, but we need "asset_id" for consistency
+                if "id" in data and "asset_id" not in data:
+                    data["asset_id"] = data["id"]
+                return data
+            logger.error(f"Asset upload failed: {response.status_code} - {response.text}")
+
+        except Exception as e:
+            logger.exception("Failed to upload video asset")
+            return {"error": True, "message": f"Upload exception: {e!s}"}
+        else:
+            return {
+                "error": True,
+                "status_code": response.status_code,
+                "message": f"Asset upload failed: {response.status_code}",
+            }
+
+    def call_vlm_api(self, asset_id: str, user_prompt: str, system_prompt: str | None = None) -> dict:
+        """Call the Milestone Hackathon VLM API with asset and prompts.
+
+        Args:
+            asset_id: The asset_id returned from upload_video_asset()
+            user_prompt: The user's question/request text
+            system_prompt: Optional system prompt for output format/safety
 
         Returns:
             Dictionary containing the VLM response
 
         """
-        # Prepare the request payload
-        payload = {"video_url": video_clip_url, "prompt": prompt, "max_tokens": 500}
+        chat_url = f"{self.vlm_api_base}/api/v1/chat/completions"
+        auth_header = f"ApiKey {self.api_key}:{self.api_secret}"
+        headers = {"Authorization": auth_header, "Content-Type": "application/json"}
 
-        headers = {"Authorization": f"Bearer {self.vlm_api_key}", "Content-Type": "application/json"}
+        # Build messages array per Hackathon API spec
+        messages = []
+
+        # Add system prompt if provided
+        if system_prompt:
+            messages.append({"role": "system", "content": [{"type": "text", "text": system_prompt}]})
+
+        # Add user message with text and asset reference
+        messages.append(
+            {
+                "role": "user",
+                "content": [{"type": "text", "text": user_prompt}, {"type": "asset_id", "asset_id": asset_id}],
+            }
+        )
+
+        payload = {"messages": messages}
 
         try:
-            response = requests.post(self.vlm_api_url, json=payload, headers=headers, timeout=30)
+            response = requests.post(chat_url, json=payload, headers=headers, timeout=180)
 
             if response.status_code == requests.codes.ok:
-                return response.json()
-            # Return error information
-            return {  # noqa: TRY300
+                result = response.json()
+                # Extract the text response from OpenAI-style format
+                if "choices" in result and len(result["choices"]) > 0:
+                    text_response = result["choices"][0].get("message", {}).get("content", "")
+                    return {"text": text_response, "full_response": result}
+                return result
+            logger.error(f"VLM API error: {response.status_code} - {response.text}")
+
+        except requests.exceptions.Timeout:
+            logger.exception("VLM API request timed out")
+            return {
                 "error": True,
-                "status_code": response.status_code,
-                "message": f"VLM API returned status code {response.status_code}",
-                "text": "I'm sorry, I couldn't analyze the video at this time. Please try again.",
+                "message": "VLM API request timed out after 180 seconds",
+                "text": "I'm sorry, the video analysis took too long. Please try again with a shorter clip.",
             }
         except requests.exceptions.RequestException:
-            # Handle network errors - don't expose details
             logger.exception("Failed to connect to VLM API")
             return {
                 "error": True,
                 "message": "Failed to connect to VLM API",
                 "text": "I'm sorry, I'm having trouble connecting to the vision service. Please try again.",
             }
+        else:
+            return {
+                "error": True,
+                "status_code": response.status_code,
+                "message": f"VLM API returned status code {response.status_code}",
+                "text": "I'm sorry, I couldn't analyze the video at this time. Please try again.",
+            }
+
+    def delete_asset(self, asset_id: str) -> bool:
+        """Delete a video asset from the Milestone API.
+
+        Args:
+            asset_id: The asset_id to delete
+
+        Returns:
+            True if successful, False otherwise
+
+        """
+        delete_url = f"{self.vlm_api_base}/api/v1/assets/{asset_id}"
+        auth_header = f"ApiKey {self.api_key}:{self.api_secret}"
+        headers = {"Authorization": auth_header}
+
+        try:
+            response = requests.delete(delete_url, headers=headers, timeout=60)
+
+        except Exception:
+            logger.exception(f"Failed to delete asset {asset_id}")
+            return False
+        return response.status_code in (requests.codes.ok, requests.codes.no_content)
 
     def process_user_request(self, lat: float, long: float, question_text: str) -> dict:
         """Process a complete user request end-to-end.
@@ -215,4 +309,3 @@ class VLMService:
             "answer": vlm_response.get("text", ""),
             "error": vlm_response.get("error", False),
         }
-

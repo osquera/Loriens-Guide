@@ -3,7 +3,7 @@
 import json
 import unittest
 
-from app import app
+from loriens_guide.app import app
 
 
 class TestAPI(unittest.TestCase):

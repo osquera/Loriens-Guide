@@ -5,14 +5,12 @@ This script shows how a mobile app would interact with the backend server
 to provide accessibility assistance to vision-impaired users.
 """
 
-
 import requests
 
 
 def main() -> None:
     """Run example API calls."""
     base_url = "http://localhost:5000"
-
 
     # Example 1: Health Check
     response = requests.get(f"{base_url}/health")
@@ -45,7 +43,6 @@ def main() -> None:
     response = requests.post(f"{base_url}/api/v1/query", json=query_data)
 
     result = response.json()
-
 
 
 if __name__ == "__main__":

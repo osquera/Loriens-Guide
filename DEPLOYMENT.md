@@ -1,52 +1,153 @@
-# Deployment Guide
+# Backend Deployment Guide - Railway
 
-This guide explains how to deploy the Lórien's Guide Hafnia VLM API backend server.
+Simple guide to deploy Lórien's Guide backend to Railway.
+
+## Why Railway?
+
+- ✅ Free tier ($5 credit/month)
+- ✅ One-command deployment
+- ✅ Automatic HTTPS
+- ✅ Easy environment variables
+- ✅ GitHub auto-deploy
 
 ## Prerequisites
 
-- Python 3.12 or higher
-- pip package manager
-- Access to a Hafnia VLM API endpoint and API key
-- Video clips for each camera location
+- GitHub account
+- Railway account (sign up at [railway.app](https://railway.app))
+- Your code pushed to GitHub
 
-## Local Development
+## Step 1: Prepare Your Project
 
-### 1. Setup Environment
+Ensure these files exist in your repo:
 
-```bash
-# Clone the repository
-git clone https://github.com/osquera/Loriens-Guide.git
-cd Loriens-Guide
-
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+**requirements.txt** (should already exist)
+**Procfile** (create if missing):
+```
+web: gunicorn backend.app:app
 ```
 
-### 2. Configure Environment Variables
-
-```bash
-# Copy example environment file
-cp .env.example .env
-
-# Edit .env and set your values
-# VLM_API_URL=https://api.hafnia.ai/v1/vlm
-# VLM_API_KEY=your_actual_api_key_here
-# PORT=5000
+**runtime.txt** (create if missing):
+```
+python-3.12.0
 ```
 
-### 3. Add Video Files
+## Step 2: Deploy to Railway
 
-Place video clips in the `videos/` directory. Ensure the filenames match those referenced in `cameras.json`.
+### Option A: Railway Dashboard (Easiest)
 
-### 4. Run the Server
+1. Go to [railway.app](https://railway.app) and sign in
+2. Click **"New Project"**
+3. Select **"Deploy from GitHub repo"**
+4. Choose your `Loriens-Guide` repository
+5. Railway will auto-detect Python and deploy
+
+### Option B: Railway CLI
 
 ```bash
-python app.py
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login
+railway login
+
+# Link to your project
+railway init
+
+# Deploy
+railway up
 ```
+
+## Step 3: Set Environment Variables
+
+In Railway Dashboard → Your Project → Variables:
+
+```
+HACKATHON_API_KEY=your_key_here
+HACKATHON_API_SECRET=your_secret_here
+VLM_API_URL=https://api.mdi.milestonesys.com
+PORT=5000
+```
+
+## Step 4: Get Your Backend URL
+
+Railway will provide a URL like:
+```
+https://loriens-guide-production.up.railway.app
+```
+
+Copy this URL - you'll need it for the frontend.
+
+## Step 5: Update Frontend
+
+Update `frontend/app.js` with your Railway backend URL:
+
+```javascript
+const CONFIG = {
+    backendUrl: 'https://your-app.up.railway.app',
+    // ... rest of config
+};
+```
+
+Commit and push to update your Cloudflare Pages frontend.
+
+## Troubleshooting
+
+### Build fails
+- Check `requirements.txt` has all dependencies
+- Verify Python version in `runtime.txt`
+
+### App crashes on start
+- Check Railway logs: Dashboard → Deployments → View Logs
+- Verify environment variables are set
+- Ensure `Procfile` uses correct path: `backend.app:app`
+
+### API calls fail
+- Test health endpoint: `https://your-app.up.railway.app/api/health`
+- Check CORS settings in `backend/app.py`
+- Verify environment variables
+
+## Monitoring
+
+Railway Dashboard provides:
+- Deployment logs
+- Runtime metrics (CPU, memory)
+- Request metrics
+- Crash alerts
+
+## Updating Your App
+
+Railway auto-deploys when you push to GitHub:
+
+```bash
+git add .
+git commit -m "Update backend"
+git push
+```
+
+Railway will automatically rebuild and deploy.
+
+## Cost
+
+- **Free tier**: $5 credit/month (~550 hours)
+- **Hobby plan**: $5/month for more resources
+- Your app should easily fit in free tier for hackathon
+
+## Alternative: Render.com
+
+If you prefer Render over Railway:
+
+1. Go to [render.com](https://render.com)
+2. Create **New Web Service**
+3. Connect GitHub repo
+4. Settings:
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn backend.app:app`
+5. Add environment variables
+6. Deploy
+
+---
+
+**Need help?** Check Railway docs: https://docs.railway.app
 
 The server will start on `http://localhost:5000`
 

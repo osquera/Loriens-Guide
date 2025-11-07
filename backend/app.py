@@ -72,11 +72,7 @@ def get_nearby_cameras() -> tuple[Response, Literal[400]] | Response:
     registry = load_camera_registry()
     # Simple distance calculation (for hackathon purposes)
     # Keep only cameras that have a location (replace loop with list comprehension)
-    nearby_cameras = [
-        camera
-        for camera in registry.get("cameras", [])
-        if camera.get("location")
-    ]
+    nearby_cameras = [camera for camera in registry.get("cameras", []) if camera.get("location")]
 
     return jsonify({"cameras": nearby_cameras})
 

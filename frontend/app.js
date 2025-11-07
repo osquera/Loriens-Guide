@@ -1,6 +1,11 @@
 // Lórien's Guide - Mobile Web App
 // Features: GPS, Speech-to-Text, Text-to-Speech
 
+// API Configuration - Update this with your backend URL
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:8000'  // Local development
+    : 'https://your-backend-api.railway.app';  // Production - CHANGE THIS!
+
 class LoriensGuide {
     constructor() {
         this.currentLocation = null;
@@ -8,6 +13,7 @@ class LoriensGuide {
         this.synthesis = window.speechSynthesis;
         this.isListening = false;
         this.isProcessing = false;
+        this.apiBaseUrl = API_BASE_URL;
         
         this.initElements();
         this.initGPS();

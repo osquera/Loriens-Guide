@@ -4,12 +4,19 @@ A lightweight server to handle logic for vision-impaired assistance in public sp
 """
 
 import json
+import os
+
+# Import VLM service
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+from loriens_guide.vlm_service import VLMService
 
 app = Flask(__name__)
 
@@ -32,6 +39,9 @@ CORS(
 
 # Load camera registry
 CAMERA_REGISTRY_PATH = Path(__file__).parent / "camera_registry.json"
+
+# Initialize VLM service
+vlm_service = VLMService()
 
 
 def load_camera_registry() -> dict:
@@ -114,11 +124,8 @@ def get_nearby_cameras() -> tuple[Response, Literal[400]] | Response:
 
 
 @app.route("/api/vlm/analyze", methods=["POST"])
-def analyze_with_vlm() -> tuple[Response, Literal[400]] | Response:
-    """Endpoint to analyze camera feed with Hafnia VLM.
-
-    This is a placeholder for VLM integration.
-    """
+def analyze_with_vlm() -> tuple[Response, int] | Response:
+    """Endpoint to analyze camera feed with Milestone VLM API."""
     data = request.json
     if data is None:
         return jsonify({"error": "Invalid JSON payload"}), 400
@@ -128,16 +135,66 @@ def analyze_with_vlm() -> tuple[Response, Literal[400]] | Response:
     if not camera_id:
         return jsonify({"error": "Camera ID required"}), 400
 
-    # Placeholder response - integrate with actual Hafnia VLM API
-    response = {
-        "camera_id": camera_id,
-        "query": query,
-        "analysis": "VLM integration placeholder - describe the scene from camera feed",
-        "confidence": 0.85,
-        "timestamp": datetime.now(tz=datetime.now().astimezone().tzinfo).isoformat(),
-    }
+    # Get camera details
+    registry = load_camera_registry()
+    camera = None
+    for cam in registry.get("cameras", []):
+        if cam["id"] == camera_id:
+            camera = cam
+            break
 
-    return jsonify(response)
+    if not camera:
+        return jsonify({"error": "Camera not found"}), 404
+
+    # Get video file path
+    video_file = camera.get("video_clip_url", "")
+    if not video_file:
+        return jsonify({"error": "No video available for this camera"}), 400
+
+    # Convert to absolute path
+    video_path = Path(__file__).parent.parent / video_file.lstrip("/")
+
+    if not video_path.exists():
+        return jsonify({"error": f"Video file not found: {video_file}"}), 404
+
+    try:
+        # Step 1: Upload video to VLM
+        upload_result = vlm_service.upload_video_asset(str(video_path))
+        if "error" in upload_result:
+            return jsonify({"error": "Failed to upload video", "message": upload_result.get("message")}), 500
+
+        asset_id = upload_result.get("asset_id")
+
+        # Step 2: Analyze with VLM
+        system_prompt = (
+            "You are an accessibility assistant for vision-impaired users navigating public spaces. "
+            "Provide clear, concise guidance using landmarks and directional cues. "
+            "Describe obstacles, safe paths, and important features. "
+            "Use specific directions like 'on your left' or 'straight ahead' instead of colors."
+        )
+
+        vlm_result = vlm_service.call_vlm_api(asset_id, query, system_prompt)
+
+        # Step 3: Clean up (delete asset)
+        vlm_service.delete_asset(asset_id)
+
+        if "error" in vlm_result:
+            return jsonify({"error": "VLM analysis failed", "message": vlm_result.get("message")}), 500
+
+        # Return successful response
+        response = {
+            "camera_id": camera_id,
+            "camera_name": camera.get("name"),
+            "query": query,
+            "analysis": vlm_result.get("text", "No analysis available"),
+            "voice_response": vlm_result.get("text", "No response available"),
+            "timestamp": datetime.now(tz=datetime.now().astimezone().tzinfo).isoformat(),
+        }
+
+        return jsonify(response)
+
+    except Exception as e:
+        return jsonify({"error": "VLM processing error", "message": str(e)}), 500
 
 
 @app.route("/api/voice/transcribe", methods=["POST"])
